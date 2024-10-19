@@ -11,9 +11,9 @@ services:
       - "./db:/docker-entrypoint-initdb.d"
 
   www:
-    build: ./docker/php
+    build: ./Dockerfile
     volumes:
-      - "./:/var/www/html"
+      - "./src:/var/www/html"
     ports:
       - 3000:80
       - 443:443
@@ -23,7 +23,5 @@ services:
     ports:
       - 5432:80
     environment:
-      - PMA_HOST=${PMA_HOST}         # The host is loaded from .env
-      - PMA_PORT=${PMA_PORT}         # The port is loaded from .env
-      - PMA_USER=${PMA_USER}         # The user is loaded from .env
-      - PMA_PASSWORD=${PMA_PASSWORD} # The password is loaded from .env
+     - PMA_HOST=db
+     - PMA_PORT=3306
