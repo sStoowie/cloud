@@ -1,22 +1,22 @@
-version: '3'
 services:
   db:
     image: mysql:latest
     environment:
       - MYSQL_DATABASE=php_docker
       - MYSQL_USER=php_docker
-      - MYSQL_PASSWORD=password
+      - MYSQL_PASSWORD=passwordd
       - MYSQL_ALLOW_EMPTY_PASSWORD=1
+      - MYSQL_ROOT_PASSWORD= rootpassword
     volumes:
       - "./db:/docker-entrypoint-initdb.d"
 
   www:
-    build: ./Dockerfile
+    image: frainnyy/webook:latest
+    build: .
     volumes:
       - "./src:/var/www/html"
     ports:
       - 3000:80
-      - 443:443
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
