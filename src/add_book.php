@@ -1,7 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-
 <?php
+session_start(); // Ensure session is started at the top
+
+if (!isset($_SESSION['user_id'])) {
+    echo "User not found or not logged in.";
+    exit(); 
+}
+
+$user_id = $_SESSION['user_id']; // Store the user_id from session
+
+echo "<div class='bg-green-100 p-4 text-green-800'>Logged in as User ID: " . $_SESSION['user_id'] . "</div>";
+
 function connectDatabase($host, $username, $password, $database)
 {
     $connection = mysqli_connect($host, $username, $password, $database);
@@ -11,7 +19,7 @@ function connectDatabase($host, $username, $password, $database)
     return $connection;
 }
 
-function addBook($connect, $title, $author, $img_url, $category, $content)
+function addBook($connect, $user_id, $title, $author, $img_url, $category, $content)
 {
     // Clean the received data
     $title = mysqli_real_escape_string($connect, $title);
@@ -20,15 +28,18 @@ function addBook($connect, $title, $author, $img_url, $category, $content)
     $category = mysqli_real_escape_string($connect, $category);
     $content = mysqli_real_escape_string($connect, $content);
 
-    $query = "INSERT INTO Books (title, author, image_url, category_id, description) VALUES (?, ?, ?, ?, ?)";
+    $query = "INSERT INTO Books (created_by, title, author, image_url, category_id, description) VALUES (?, ?, ?, ?, ?, ?)";
     $stmt = mysqli_prepare($connect, $query);
 
     // Bind the parameters
-    mysqli_stmt_bind_param($stmt, 'sssss', $title, $author, $img_url, $category, $content);
+    mysqli_stmt_bind_param($stmt, 'isssis', $user_id, $title, $author, $img_url, $category, $content);
 
     // Execute the query
-    mysqli_stmt_execute($stmt);
-    mysqli_stmt_close($stmt);
+    if (mysqli_stmt_execute($stmt)) {
+        return true; // Return true if successful
+    } else {
+        return false; // Return false if there was an error
+    }
 }
 
 define('DB_HOST', 'db');
@@ -47,13 +58,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $content = $_POST['content'];
 
     // Add the novel to the database
-    addBook($connect, $title, $author, $img_url, $category_id, $content); 
-
-    // Set success message
-    $successMessage = "Book added successfully!";
+    if (addBook($connect, $user_id, $title, $author, $img_url, $category_id, $content)) {
+        $successMessage = "Book added successfully!";
+    } else {
+        $successMessage = "Failed to add the book. Please try again.";
+    }
 }
 ?>
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -62,12 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body class="bg-gray-100">
-
     <?php include 'navbar.php'; ?>
-    <!-- Main Content -->
     <main class="flex items-center justify-center min-h-screen py-8">
         <div class="container mx-auto flex justify-center p-10 bg-white rounded-lg shadow-md">
-
             <div class="md:w-2/3 w-full">
                 <?php if ($successMessage): ?>
                     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
@@ -75,7 +86,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <span class="block sm:inline"><?php echo $successMessage; ?></span>
                     </div>
                 <?php endif; ?>
-                <form method="POST" action="">
+                <form method="POST" action="">                                        
                     <label for="title" class="mt-4 font-semibold">Title</label>
                     <input type="text" id="title" name="title" placeholder="Enter novel name" class="mt-2 p-2 border rounded w-full" required>
 
@@ -83,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <input type="text" id="author" name="author" placeholder="Enter author name" class="mt-2 p-2 border rounded w-full" required>
 
                     <label for="img_url" class="mt-4 font-semibold">Image URL</label>
-                    <input type="text" id="img_url" name="img_url" placeholder="Enter image url" class="mt-2 p-2 border rounded w-full" required>
+                    <input type="text" id="img_url" name="img_url" placeholder="Enter image URL" class="mt-2 p-2 border rounded w-full" required>
 
                     <label class="mt-4 font-semibold">Categories</label>
                     <div class="flex flex-wrap mt-2 gap-2">
@@ -133,6 +144,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             document.getElementById("category").value = categories[selectedCategory]; // Set selected category ID
         }
     </script>
-
 </body>
 </html>

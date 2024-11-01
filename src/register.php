@@ -56,19 +56,45 @@
             </p>
         </div>
     </div>
-
     <?php
     // ฟังก์ชันเชื่อมต่อฐานข้อมูล
-    function connectDatabase($host, $username, $password, $database)
-    {
-        $connection = mysqli_connect($host, $username, $password, $database);
+            $connection = mysqli_connect('db', 'php_docker', 'passwordd', 'php_docker');
 
-        if (!$connection) {
-            die("Connection failed: " . mysqli_connect_error());
+            if (!$connection) {
+                die("Connection failed: " . mysqli_connect_error());
+            }
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $user = $_POST['username'];
+            $email = $_POST['email'];
+            $pass = $_POST['password'];
+            $confirmPass = $_POST['confirm-password'];
+        
+            // Check if passwords match
+            if ($pass !== $confirmPass) {
+                echo "<script>
+                alert('Passwords do not match. Please rewrite the password');
+                </script>";
+                die();
+            }
+            $hashedPass = password_hash($pass, PASSWORD_DEFAULT);
+            $statement = $connection->prepare("INSERT INTO Users (username, email, password) VALUES (?, ?, ?)");
+            $statement->bind_param("sss", $user, $email, $hashedPass);
+
+            if ($statement->execute()) {
+                echo "<script>
+                alert('Registration successful! You will be redirected to the login page.');
+                window.location.href = 'login.php';
+                </script>";                         
+            } else {
+                echo "<script>
+                alert('\"Error: \" . $statement->error;);
+                </script>";
+            }
+
+            $statement->close();
+            $connection->close();
         }
-
-        return $connection;
-    }
     ?>
 </body>
 

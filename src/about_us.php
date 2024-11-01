@@ -1,3 +1,43 @@
+<?php
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+    // Check if user role is admin
+    if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+        header("Location: approval.php"); // Redirect to approval page for admin
+        exit();
+    }
+    
+    include 'navbar_after.php'; // For logged-in users
+    // Display the user_id and role safely
+    $user_id = $_SESSION['user_id'];
+    $role = isset($_SESSION['role']) ? htmlspecialchars($_SESSION['role']) : 'User'; // Default to 'User' if role is not set
+    // echo "<div class='bg-green-100 p-4 text-green-800'>Logged in as User ID: $user_id | Role: $role</div>";
+} else {
+    include 'navbar.php'; // For guests
+}
+
+function connectDatabase($host, $username, $password, $database)
+{
+    $connection = mysqli_connect($host, $username, $password, $database);
+
+    if (!$connection) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    return $connection;
+} 
+
+
+// ค่าคงที่สำหรับฐานข้อมูล
+define('DB_HOST', 'db');
+define('DB_USERNAME', 'php_docker');
+define('DB_PASSWORD', 'passwordd');
+define('DB_NAME', 'php_docker');
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -8,7 +48,6 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-800">
 
-<?php include 'navbar.php'; ?>
 
 <div class="max-w-2xl mx-auto mt-16 p-8 bg-white rounded-lg shadow-lg text-center">
     <h1 class="text-4xl font-semibold mb-6 text-gray-800">เกี่ยวกับเรา</h1>

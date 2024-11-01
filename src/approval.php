@@ -9,7 +9,7 @@
 
 <body class="bg-gray-900 text-white font-sans">
 
-<?php include 'navbar.php'; ?>
+<?php include 'navbar_admin.php'; ?>
 
   <!-- Content -->
   <div class="container mx-auto py-10 px-4">
