@@ -25,38 +25,38 @@
     }
 
     // ฟังก์ชันเพิ่มหนังสือ
-    function addBook($connect, $title, $author, $isbn, $category_id, $image_url, $description)
-    {
-        $query = "INSERT INTO books (title, author, isbn, category_id, image_url, description) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = mysqli_prepare($connect, $query);
+    // function addBook($connect, $title, $author, $isbn, $category_id, $image_url, $description)
+    // {
+    //     $query = "INSERT INTO Books (title, author, isbn, category_id, image_url, description) VALUES (?, ?, ?, ?, ?, ?)";
+    //     $stmt = mysqli_prepare($connect, $query);
 
-        // ผูกค่าที่จะเพิ่ม
-        mysqli_stmt_bind_param($stmt, 'ssssss', $title, $author, $isbn, $category_id, $image_url, $description);
+    //     // ผูกค่าที่จะเพิ่ม
+    //     mysqli_stmt_bind_param($stmt, 'ssssss', $title, $author, $isbn, $category_id, $image_url, $description);
 
-        // ประมวลผลคำสั่ง
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-    }
+    //     // ประมวลผลคำสั่ง
+    //     mysqli_stmt_execute($stmt);
+    //     mysqli_stmt_close($stmt);
+    // }
 
     // ค่าคงที่สำหรับฐานข้อมูล
     define('DB_HOST', 'db');
     define('DB_USERNAME', 'php_docker');
-    define('DB_PASSWORD', 'password');
+    define('DB_PASSWORD', 'passwordd');
     define('DB_NAME', 'php_docker');
 
     // เชื่อมต่อฐานข้อมูล
     $connect = connectDatabase(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
     // ชื่อของตาราง
-    $table_name_books = "books";
-    $table_name_categories = "categories";
+    $table_name_books = "Books";
+    $table_name_categories = "Categories";
 
     // JOIN ตาราง books กับ categories
     $query = "
-    SELECT b.*, c.name AS category_name
+    SELECT b.*, c.category_name AS category_name
     FROM $table_name_books b
-    LEFT JOIN $table_name_categories c ON b.category_id = c.id
-";
+    LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+    ";
 
     $response = mysqli_query($connect, $query);
 
@@ -70,10 +70,10 @@
                 <?php
                 // JOIN ตาราง books กับ categories และเลือกเฉพาะหนังสือที่เป็นหมวดหมู่ 'horror'
                 $query = "
-                SELECT b.*, c.name AS category_name
+                SELECT b.*, c.category_name AS category_name
                 FROM $table_name_books b
-                LEFT JOIN $table_name_categories c ON b.category_id = c.id
-                WHERE c.name = 'Horror'";
+                LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+                WHERE c.category_name = 'Horror'";
 
                 $response = mysqli_query($connect, $query);
 
@@ -92,7 +92,7 @@
                     <div class='mt-4 flex justify-between'>
                         <div>
                             <h3 class='text-sm text-gray-700'>
-                                <a href='book_details.php?id=" . $book['id'] . "'>
+                                <a href='book_details.php?id=" . $book['category_id'] . "'>
                                     <span aria-hidden='true' class='absolute inset-0'></span>
                                     $title
                                 </a>
@@ -111,10 +111,10 @@
                 <?php
                 // JOIN ตาราง books กับ categories
                 $query = "
-                SELECT b.*, c.name AS category_name
+                SELECT b.*, c.category_name AS category_name
                 FROM $table_name_books b
-                LEFT JOIN $table_name_categories c ON b.category_id = c.id
-                WHERE c.name = 'Romance'";
+                LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+                WHERE c.category_name = 'Romance'";
 
                 $response = mysqli_query($connect, $query);
 
@@ -133,7 +133,7 @@
                     <div class='mt-4 flex justify-between'>
                         <div>
                             <h3 class='text-sm text-gray-700'>
-                                <a href='book_details.php?id=" . $book['id'] . "'>
+                                <a href='book_details.php?id=" . $book['category_id'] . "'>
                                     <span aria-hidden='true' class='absolute inset-0'></span>
                                     $title
                                 </a>
@@ -152,10 +152,10 @@
                 <?php
                 // JOIN ตาราง books กับ categories
                 $query = "
-                SELECT b.*, c.name AS category_name
+                SELECT b.*, c.category_name AS category_name
                 FROM $table_name_books b
-                LEFT JOIN $table_name_categories c ON b.category_id = c.id
-                WHERE c.name = 'Yaoi'";
+                LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+                WHERE c.category_name = 'Yaoi'";
 
                 $response = mysqli_query($connect, $query);
 
@@ -193,10 +193,10 @@
                 <?php
                 // JOIN ตาราง books กับ categories
                 $query = "
-                SELECT b.*, c.name AS category_name
+                SELECT b.*, c.category_name AS category_name
                 FROM $table_name_books b
-                LEFT JOIN $table_name_categories c ON b.category_id = c.id
-                WHERE c.name = 'Fantasy'";
+                LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+                WHERE c.category_name = 'Fantasy'";
 
                 $response = mysqli_query($connect, $query);
 
@@ -215,7 +215,7 @@
                     <div class='mt-4 flex justify-between'>
                         <div>
                             <h3 class='text-sm text-gray-700'>
-                                <a href='book_details.php?id=" . $book['id'] . "'>
+                                <a href='book_details.php?id=" . $book['category_id'] . "'>
                                     <span aria-hidden='true' class='absolute inset-0'></span>
                                     $title
                                 </a>
@@ -234,10 +234,10 @@
                 <?php
                 // JOIN ตาราง books กับ categories
                 $query = "
-                SELECT b.*, c.name AS category_name
+                SELECT b.*, c.category_name AS category_name
                 FROM $table_name_books b
-                LEFT JOIN $table_name_categories c ON b.category_id = c.id
-                WHERE c.name = 'Mystery'";
+                LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+                WHERE c.category_name = 'Mystery'";
 
                 $response = mysqli_query($connect, $query);
 
@@ -256,7 +256,7 @@
                     <div class='mt-4 flex justify-between'>
                         <div>
                             <h3 class='text-sm text-gray-700'>
-                                <a href='book_details.php?id=" . $book['id'] . "'>
+                                <a href='book_details.php?id=" . $book['category_id'] . "'>
                                     <span aria-hidden='true' class='absolute inset-0'></span>
                                     $title
                                 </a>
@@ -275,10 +275,10 @@
                 <?php
                 // JOIN ตาราง books กับ categories
                 $query = "
-                SELECT b.*, c.name AS category_name
+                SELECT b.*, c.category_name AS category_name
                 FROM $table_name_books b
-                LEFT JOIN $table_name_categories c ON b.category_id = c.id
-                WHERE c.name = 'Children\'s'";
+                LEFT JOIN $table_name_categories c ON b.category_id = c.category_id
+                WHERE c.category_name = 'Children\'s'";
 
                 $response = mysqli_query($connect, $query);
 
@@ -297,7 +297,7 @@
                     <div class='mt-4 flex justify-between'>
                         <div>
                             <h3 class='text-sm text-gray-700'>
-                                <a href='book_details.php?id=" . $book['id'] . "'>
+                                <a href='book_details.php?id=" . $book['category_id'] . "'>
                                     <span aria-hidden='true' class='absolute inset-0'></span>
                                     $title
                                 </a>

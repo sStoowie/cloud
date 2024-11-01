@@ -27,21 +27,21 @@
     // ค่าคงที่สำหรับฐานข้อมูล
     define('DB_HOST', 'db');
     define('DB_USERNAME', 'php_docker');
-    define('DB_PASSWORD', 'password');
+    define('DB_PASSWORD', 'passwordd');
     define('DB_NAME', 'php_docker');
 
     // เชื่อมต่อฐานข้อมูล
     $connect = connectDatabase(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
-    // JOIN ตาราง books กับ categories และจัดเรียงตามวันที่สร้างล่าสุด
+    // JOIN ตาราง Books กับ Categories และจัดเรียงตามวันที่สร้างล่าสุด
     $query = "
-    SELECT b.*, c.name AS category_name
-    FROM books b
-    LEFT JOIN categories c ON b.category_id = c.id
-    ORDER BY b.created_at DESC"; // จัดเรียงจากสร้างล่าสุด
+    SELECT b.*, c.category_name
+    FROM Books b
+    LEFT JOIN Categories c ON b.category_id = c.category_id
+    WHERE b.status = 'approved' 
+    ORDER BY b.created_at DESC";
 
     $response = mysqli_query($connect, $query);
-
     ?>
 
     <div class="bg-white">
@@ -52,10 +52,10 @@
                 <?php
                 // Loop ผ่านข้อมูลหนังสือและแสดงข้อมูลเรียงตามวันที่สร้างล่าสุด
                 while ($book = mysqli_fetch_assoc($response)) {
-                    $title = $book['title'];                 // ชื่อหนังสือ
-                    $categoryName = $book['category_name'];  // ชื่อหมวดหมู่
-                    $imageUrl = $book['image_url'];          // URL ของภาพ
-                    $createdAt = $book['created_at'];        // วันที่สร้างหนังสือ
+                    $title = $book['title'];                // ชื่อหนังสือ
+                    $categoryName = $book['category_name']; // ชื่อหมวดหมู่
+                    $imageUrl = $book['image_url'];         // URL ของภาพ
+                    $createdAt = $book['created_at'];       // วันที่สร้างหนังสือ
 
                     // แสดงข้อมูลหนังสือในรูปแบบที่ต้องการ
                     echo "
@@ -66,7 +66,7 @@
                         <div class='mt-4 flex justify-between'>
                             <div>
                                 <h3 class='text-sm text-gray-700'>
-                                    <a href='book_details.php?id=" . $book['id'] . "'>
+                                    <a href='book_details.php?id=" . $book['book_id'] . "'>
                                         <span aria-hidden='true' class='absolute inset-0'></span>
                                         $title
                                     </a>
